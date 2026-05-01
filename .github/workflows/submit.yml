@@ -30,8 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build and Package
+      - name: Build and Package Chrome
         run: pnpm build && pnpm package
+
+      - name: Build and Package Firefox
+        run: pnpm build:firefox && pnpm package:firefox
 
       - name: Create / Update GitHub Release (Free Distribution)
         uses: softprops/action-gh-release@v2
@@ -40,17 +43,26 @@ jobs:
           name: QuickFill Production Build
           body: |
             ## ⚡ QuickFill Production Build
-            This is the latest production build of the QuickFill extension.
+            This release contains the latest builds for both **Chrome** and **Firefox**.
             
             ### 🛠 How to install (100% Free):
-            1. Download `QuickFill-Production.zip` below.
-            2. Extract the ZIP into a folder on your computer.
-            3. Go to `chrome://extensions/` in your Chrome browser.
-            4. Enable **Developer Mode** (top right corner).
-            5. Click **Load Unpacked** and select the extracted folder.
             
-            *Note: All your data is stored locally on your device.*
-          files: build/chrome-mv3-prod.zip
+            #### For Chrome:
+            1. Download `QuickFill-Production.zip` (Chrome build).
+            2. Extract to a folder.
+            3. Go to `chrome://extensions/` and enable **Developer Mode**.
+            4. Click **Load Unpacked** and select the folder.
+            
+            #### For Firefox:
+            1. Download `QuickFill-Production-Firefox.zip` (Firefox build).
+            2. Go to `about:debugging#/runtime/this-firefox` in Firefox.
+            3. Click **Load Temporary Add-on...**
+            4. Select the `.zip` file directly.
+            
+            *Note: Firefox temporary add-ons are removed when the browser restarts. For permanent use, sideloading on Firefox requires the 'Developer Edition' or 'Nightly' version.*
+          files: |
+            build/chrome-mv3-prod.zip
+            build/firefox-mv2-prod.zip
           draft: false
           prerelease: false
         env:
