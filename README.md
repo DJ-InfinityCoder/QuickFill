@@ -1,33 +1,60 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# QuickFill — Placement Form Autofiller
+
+![QuickFill Logo](./assets/quick_fill.png)
+
+**QuickFill** is a production-ready Chrome Extension designed to automate filling Google Forms circulated by college T&P (Training & Placement) Cells for company placement drives.
+
+## 🚀 Installation (100% Free)
+
+Since this is a student project, you can install it for free without using the Chrome Web Store:
+
+1. **Download**: Go to the [Latest Release](https://github.com/${{ github.repository }}/releases/tag/latest) and download `QuickFill-Production.zip`.
+2. **Extract**: Unzip the file into a folder on your computer.
+3. **Open Chrome Extensions**: Type `chrome://extensions/` in your browser address bar.
+4. **Developer Mode**: Toggle the **Developer mode** switch in the top right corner.
+5. **Load Unpacked**: Click the **Load unpacked** button and select the folder you extracted.
+
+---
+
+## 🛠 Features
+
+- ⚡ **Smart Autofill**: Automatically detects and fills fields in Google Forms.
+- 👤 **Profile Management**: Save your student details once and use them for every form.
+- 🧠 **Intelligent Matching**: Uses fuzzy matching to map form questions to your profile data.
+- 🔒 **Privacy First**: All your sensitive data is stored locally on your machine. Nothing is sent to any server.
+
+## Tech Stack
+
+- **Framework**: [Plasmo](https://docs.plasmo.com/)
+- **UI**: React + Tailwind CSS
+- **Storage**: chrome.storage.local
+- **Language**: TypeScript
 
 ## Getting Started
 
-First, run the development server:
+1. Clone this repository.
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Run the development server:
+   ```bash
+   pnpm dev
+   ```
+4. Load the extension in Chrome:
+   - Go to `chrome://extensions/`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the `build/chrome-mv3-dev` folder.
 
-```bash
-pnpm dev
-# or
-npm run dev
-```
-
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
-
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
-
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
-
-## Making production build
-
-Run the following:
+## Build for Production
 
 ```bash
 pnpm build
-# or
-npm run build
 ```
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
+The production-ready bundle will be in `build/chrome-mv3-prod`.
 
-## Submit to the webstores
+---
+Developed by Dilip Meghwal for NIT Delhi students.
 
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!

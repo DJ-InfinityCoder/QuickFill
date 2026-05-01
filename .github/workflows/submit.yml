@@ -1,5 +1,11 @@
 name: "Submit to Web Store"
 on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
   workflow_dispatch:
 
 jobs:
@@ -27,8 +33,30 @@ jobs:
         run: pnpm build
       - name: Package the extension into a zip artifact
         run: pnpm package
-      - name: Browser Platform Publish
+      - name: Browser Platform Publish (Chrome Web Store)
         uses: PlasmoHQ/bpp@v3
+        continue-on-error: true # Don't fail if secrets aren't set up yet
         with:
           keys: ${{ secrets.SUBMIT_KEYS }}
           artifact: build/chrome-mv3-prod.zip
+
+      - name: Create / Update GitHub Release (Free Distribution)
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: QuickFill Production Build
+          body: |
+            ## QuickFill Production Build
+            This is the latest production build of the QuickFill extension.
+            
+            ### How to install (Free):
+            1. Download `QuickFill-Production.zip` below.
+            2. Extract the ZIP into a folder.
+            3. Go to `chrome://extensions/` in Chrome.
+            4. Enable **Developer Mode**.
+            5. Click **Load Unpacked** and select the extracted folder.
+          files: build/chrome-mv3-prod.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
