@@ -151,7 +151,8 @@ export function ProfileForm(): React.ReactElement {
       setSaved(true)
       setLastSaved(new Date().toLocaleString())
       setTimeout(() => setSaved(false), 3000)
-    } catch {
+    } catch (err) {
+      console.error("[QuickFill] Save error:", err)
       setErrors({ _save: "Failed to save profile" })
     } finally {
       setSaving(false)

@@ -10,7 +10,9 @@ import type {
   StudentProfile
 } from "~types"
 
-const storage = new Storage()
+const storage = new Storage({
+  area: "local"
+})
 
 const STORAGE_KEYS = {
   PROFILE: "quickfill_profile",
@@ -30,6 +32,17 @@ export async function getProfile(): Promise<StudentProfile | null> {
     if (profile && typeof profile === "object") {
       return profile
     }
+    
+    // Fallback to localStorage
+    const local = localStorage.getItem(STORAGE_KEYS.PROFILE)
+    if (local) {
+      try {
+        return JSON.parse(local) as StudentProfile
+      } catch {
+        return null
+      }
+    }
+
     return null
   } catch (error) {
     console.error("[QuickFill] Failed to get profile:", error)
@@ -40,11 +53,27 @@ export async function getProfile(): Promise<StudentProfile | null> {
 /** Save the student profile to storage */
 export async function saveProfile(profile: StudentProfile): Promise<void> {
   try {
+    console.log("[QuickFill] Attempting to save profile:", profile)
+    
+    // Safety check for extension context
+    if (typeof chrome === "undefined" || !chrome.storage) {
+      console.warn("[QuickFill] extension storage not available, falling back to local storage if possible")
+    }
+
     await storage.set(STORAGE_KEYS.PROFILE, profile)
     await storage.set(STORAGE_KEYS.PROFILE_UPDATED_AT, Date.now())
+    console.log("[QuickFill] Profile saved successfully")
   } catch (error) {
-    console.error("[QuickFill] Failed to save profile:", error)
-    throw new Error("Failed to save profile to storage")
+    console.error("[QuickFill] Detailed save failure:", error)
+    // Fallback attempt if it was a context issue
+    try {
+      localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile))
+      console.log("[QuickFill] Saved to localStorage as fallback")
+      return
+    } catch (fallbackError) {
+      console.error("[QuickFill] Fallback save failed too:", fallbackError)
+    }
+    throw error
   }
 }
 
