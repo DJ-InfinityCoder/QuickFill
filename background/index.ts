@@ -5,6 +5,7 @@
 
 import type { ExtensionMessage } from "~types"
 import { saveSession } from "~store/profileStore"
+import { setBadgeText, setBadgeBackgroundColor, sendTabMessage } from "~lib/browser"
 
 /** Track which tabs have Google Forms open */
 const formTabs = new Map<number, string>()
@@ -17,10 +18,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
     try {
       if (tab.url.includes("docs.google.com/forms")) {
-        chrome.action.setBadgeText({ text: "●", tabId })
-        chrome.action.setBadgeBackgroundColor({ color: "#6366f1", tabId })
+        setBadgeText("●", tabId)
+        setBadgeBackgroundColor("#6366f1", tabId)
       } else {
-        chrome.action.setBadgeText({ text: "", tabId })
+        setBadgeText("", tabId)
         formTabs.delete(tabId)
       }
     } catch {
@@ -45,7 +46,7 @@ chrome.runtime.onMessage.addListener(
 
       if (message.type === "FORM_DETECTED") {
         formTabs.set(tabId, message.title)
-        chrome.action.setBadgeText({ text: "●", tabId }).catch(() => {})
+        setBadgeText("●", tabId)
         // Forward to popup if it's listening
         sendResponse({ received: true })
         return false
@@ -64,7 +65,7 @@ chrome.runtime.onMessage.addListener(
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const activeTab = tabs[0]
         if (activeTab?.id) {
-          chrome.tabs.sendMessage(activeTab.id, message)
+          sendTabMessage(activeTab.id, message)
             .then((response) => sendResponse(response))
             .catch((err: unknown) => {
               const errorMsg = err instanceof Error ? err.message : "Failed to reach content script"

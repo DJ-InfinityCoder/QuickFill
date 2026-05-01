@@ -25,11 +25,9 @@ const delay = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms
 /** Safely send a message, catching errors when popup is closed */
 function safeSendMessage(message: ExtensionMessage): void {
   try {
-    chrome.runtime.sendMessage(message).catch(() => {
-      // Popup may not be open — this is expected
-    })
+    chrome.runtime.sendMessage(message)
   } catch {
-    // Extension context may be invalidated
+    // Extension context may be invalidated or popup closed
   }
 }
 

@@ -1,13 +1,16 @@
 // ============================================================
 // QuickFill — Storage Layer
-// CRUD helpers using chrome.storage.local
-// Never uses localStorage — all data persists via chrome.storage
+// CRUD helpers using @plasmohq/storage
+// Handles cross-browser persistence automatically
 // ============================================================
 
+import { Storage } from "@plasmohq/storage"
 import type {
   FillSession,
   StudentProfile
 } from "~types"
+
+const storage = new Storage()
 
 const STORAGE_KEYS = {
   PROFILE: "quickfill_profile",
@@ -23,10 +26,9 @@ const STORAGE_KEYS = {
 /** Retrieve the saved student profile, or null if not found */
 export async function getProfile(): Promise<StudentProfile | null> {
   try {
-    const result = await chrome.storage.local.get(STORAGE_KEYS.PROFILE)
-    const profile = result[STORAGE_KEYS.PROFILE] as unknown
+    const profile = await storage.get<StudentProfile>(STORAGE_KEYS.PROFILE)
     if (profile && typeof profile === "object") {
-      return profile as StudentProfile
+      return profile
     }
     return null
   } catch (error) {
@@ -35,13 +37,11 @@ export async function getProfile(): Promise<StudentProfile | null> {
   }
 }
 
-/** Save the student profile to chrome.storage.local */
+/** Save the student profile to storage */
 export async function saveProfile(profile: StudentProfile): Promise<void> {
   try {
-    await chrome.storage.local.set({
-      [STORAGE_KEYS.PROFILE]: profile,
-      [STORAGE_KEYS.PROFILE_UPDATED_AT]: Date.now()
-    })
+    await storage.set(STORAGE_KEYS.PROFILE, profile)
+    await storage.set(STORAGE_KEYS.PROFILE_UPDATED_AT, Date.now())
   } catch (error) {
     console.error("[QuickFill] Failed to save profile:", error)
     throw new Error("Failed to save profile to storage")
@@ -55,10 +55,9 @@ export async function saveProfile(profile: StudentProfile): Promise<void> {
 /** Get the current profile draft if it exists */
 export async function getProfileDraft(): Promise<StudentProfile | null> {
   try {
-    const result = await chrome.storage.local.get(STORAGE_KEYS.PROFILE_DRAFT)
-    const draft = result[STORAGE_KEYS.PROFILE_DRAFT] as unknown
+    const draft = await storage.get<StudentProfile>(STORAGE_KEYS.PROFILE_DRAFT)
     if (draft && typeof draft === "object") {
-      return draft as StudentProfile
+      return draft
     }
     return null
   } catch {
@@ -69,26 +68,21 @@ export async function getProfileDraft(): Promise<StudentProfile | null> {
 /** Save a temporary draft of the profile */
 export async function saveProfileDraft(profile: StudentProfile): Promise<void> {
   try {
-    await chrome.storage.local.set({
-      [STORAGE_KEYS.PROFILE_DRAFT]: profile
-    })
+    await storage.set(STORAGE_KEYS.PROFILE_DRAFT, profile)
   } catch {}
 }
 
 /** Clear the profile draft */
 export async function clearProfileDraft(): Promise<void> {
   try {
-    await chrome.storage.local.remove(STORAGE_KEYS.PROFILE_DRAFT)
+    await storage.remove(STORAGE_KEYS.PROFILE_DRAFT)
   } catch {}
 }
 
 /** Get the timestamp of the last profile update */
 export async function getProfileUpdatedAt(): Promise<number | null> {
   try {
-    const result = await chrome.storage.local.get(
-      STORAGE_KEYS.PROFILE_UPDATED_AT
-    )
-    const timestamp = result[STORAGE_KEYS.PROFILE_UPDATED_AT] as unknown
+    const timestamp = await storage.get<number>(STORAGE_KEYS.PROFILE_UPDATED_AT)
     if (typeof timestamp === "number") {
       return timestamp
     }
@@ -107,10 +101,9 @@ export async function getProfileUpdatedAt(): Promise<number | null> {
 /** Get the last fill session */
 export async function getLastSession(): Promise<FillSession | null> {
   try {
-    const result = await chrome.storage.local.get(STORAGE_KEYS.LAST_SESSION)
-    const session = result[STORAGE_KEYS.LAST_SESSION] as unknown
+    const session = await storage.get<FillSession>(STORAGE_KEYS.LAST_SESSION)
     if (session && typeof session === "object") {
-      return session as FillSession
+      return session
     }
     return null
   } catch (error) {
@@ -122,9 +115,7 @@ export async function getLastSession(): Promise<FillSession | null> {
 /** Save a fill session */
 export async function saveSession(session: FillSession): Promise<void> {
   try {
-    await chrome.storage.local.set({
-      [STORAGE_KEYS.LAST_SESSION]: session
-    })
+    await storage.set(STORAGE_KEYS.LAST_SESSION, session)
   } catch (error) {
     console.error("[QuickFill] Failed to save session:", error)
     throw new Error("Failed to save session to storage")

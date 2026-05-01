@@ -1,7 +1,7 @@
 {
   "name": "QuickFill",
   "displayName": "QuickFill — Placement Form Autofiller",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Automatically fills Google Forms circulated by college T&P cells for company placement drives. Save your profile once, fill forms instantly.",
   "author": "Dilip",
   "scripts": {

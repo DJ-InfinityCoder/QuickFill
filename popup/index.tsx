@@ -15,6 +15,7 @@ import { ProfileForm } from "~components/ProfileForm"
 import { FillStatusSummary, ProgressBar } from "~components/StatusBadge"
 import { getLastSession } from "~store/profileStore"
 import { AutofillIcon, ProfileIcon, SearchIcon, CheckIcon } from "~components/Icons"
+import { sendTabMessage } from "~lib/browser"
 
 import logo from "data-base64:~assets/quick_fill.png"
 
@@ -105,7 +106,7 @@ function IndexPopup(): React.ReactElement {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0]
       if (tab?.id) {
-        chrome.tabs.sendMessage(tab.id, { type: "TRIGGER_AUTOFILL" }).catch(() => {
+        sendTabMessage(tab.id, { type: "TRIGGER_AUTOFILL" }).catch(() => {
           setError("Could not reach the form page. Refresh and try again.")
           setScanning(false)
         })
@@ -120,7 +121,7 @@ function IndexPopup(): React.ReactElement {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0]
       if (tab?.id) {
-        chrome.tabs.sendMessage(tab.id, { type: "CONFIRM_FILL" }).catch(() => {
+        sendTabMessage(tab.id, { type: "CONFIRM_FILL" }).catch(() => {
           setError("Could not reach the form page. Refresh and try again.")
           setFilling(false)
         })
